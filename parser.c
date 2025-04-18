@@ -1,5 +1,9 @@
-#include "shell.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 /**
  * split_line - Splits a line into words (only keeps the first word)
  * @line: The string to be split
