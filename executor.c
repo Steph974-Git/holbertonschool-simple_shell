@@ -39,7 +39,7 @@ int execute_command(char **args, char *program_name, int line_number)
 	}
 	else
 	{
-		wait(&status);
+		waitpid(child_pid, &status, 0);
 		return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
 	}
 
