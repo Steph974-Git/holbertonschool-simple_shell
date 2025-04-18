@@ -102,7 +102,8 @@ int main(int argc, char **argv)
 
 		if (nread == -1)
 		{
-			if (feof(stdin) && interactive)
+			/* Remplacer feof(stdin) par cette condition */
+			if (interactive)
 				printf("\n");
 			break;
 		}
