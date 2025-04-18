@@ -36,6 +36,7 @@ int execute_command(char **args, char *program_name, int line_number)
 				program_name, line_number, args[0]);
 			exit(127); /* Code de sortie standard pour commande non trouvée */
 		}
+		exit(0); /* Ne sera jamais exécuté si execve réussit */
 	}
 	else
 	{

@@ -2,24 +2,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 #include "shell.h"
 
 /**
- * _strlen -  returns the length of a string
- * @s: My first strlen!
- * Return: i
+ * handle_sigint - Gestionnaire de signal pour SIGINT (Ctrl+C)
+ * @sig: Numéro du signal
  */
-
-int _strlen(char *s)
-
+void handle_sigint(int sig)
 {
-	int i = 0;
-
-	while (s[i] != '\0')
-	{
-		i++;
-	}
-	return (i);
+	(void)sig;
+	write(STDOUT_FILENO, "\n#cisfun$ ", 10);
 }
 
 /**
@@ -53,7 +46,7 @@ int process_command(char *line, char *program_name, int line_number)
 	char **args;
 	int status;
 
-	if (_strlen(line) == 0)
+	if (strlen(line) == 0)
 		return (0);
 
 	args = split_line(line);
@@ -86,6 +79,8 @@ int main(int argc, char **argv)
 	char *program_name = argv[0];
 	int last_status = 0;
 
+	signal(SIGINT, handle_sigint);
+
 	(void)argc;
 
 	while (1)
@@ -94,7 +89,7 @@ int main(int argc, char **argv)
 
 		if (interactive)
 		{
-			printf("$ ");
+			printf("#cisfun$ ");
 			fflush(stdout);
 		}
 
@@ -102,7 +97,6 @@ int main(int argc, char **argv)
 
 		if (nread == -1)
 		{
-			/* Remplacer feof(stdin) par cette condition */
 			if (interactive)
 				printf("\n");
 			break;
