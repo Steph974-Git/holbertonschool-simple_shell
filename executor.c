@@ -7,10 +7,12 @@
 /**
  * execute_command - Exécute une commande
  * @args: Tableau d'arguments (terminé par NULL)
+ * @program_name: Nom du programme (argv[0])
+ * @line_number: Numéro de ligne actuel
  *
  * Return: Statut d'exécution
  */
-int execute_command(char **args)
+int execute_command(char **args, char *program_name, int line_number)
 {
 	pid_t child_pid;
 	int status;
@@ -30,8 +32,9 @@ int execute_command(char **args)
 	{
 		if (execve(args[0], args, environ) == -1)
 		{
-			perror(args[0]);
-			exit(EXIT_FAILURE);
+			fprintf(stderr, "%s: %d: %s: not found\n",
+				program_name, line_number, args[0]);
+			exit(127); /* Code de sortie standard pour commande non trouvée */
 		}
 	}
 	else
