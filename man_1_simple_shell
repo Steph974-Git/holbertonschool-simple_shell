@@ -1,0 +1,58 @@
+.TH SIMPLE_SHELL 1 "Avril 2025" "Version 1.0" "Manuel de l'utilisateur simple_shell"
+.SH NOM
+simple_shell \- interpréteur de commandes simple
+.SH SYNOPSIS
+.B simple_shell
+.SH DESCRIPTION
+.B simple_shell
+est un interpréteur de commandes simples UNIX. Il lit des commandes de l'entrée standard ou d'un fichier et les exécute.
+.SH UTILISATION
+Le shell s'exécute en mode interactif quand il lit des commandes depuis un terminal. Il affiche un prompt "$" quand il attend une commande.
+.P
+En mode non-interactif, le shell exécute les commandes qu'il reçoit depuis l'entrée standard, comme dans un pipe (ex: echo "/bin/ls" | ./simple_shell).
+.SH COMMANDES
+Le shell exécute les programmes spécifiés par leurs chemins absolus. Si la commande n'existe pas, une erreur est renvoyée.
+.P
+Exemples:
+.P
+$ /bin/ls
+.P
+$ /bin/pwd
+.SH FONCTIONNALITÉS
+.P
+Le shell gère:
+.P
+.RS
+.B - L'exécution de commandes avec chemin absolu.
+.br
+.B - Les erreurs de commande.
+.br
+.B - La fin de fichier (Ctrl+D).
+.RE
+.SH LIMITATIONS
+.P
+Le shell ne gère pas:
+.P
+.RS
+.B - Les arguments aux commandes.
+.br
+.B - La recherche de commandes dans PATH.
+.br
+.B - Les commandes intégrées comme cd, exit.
+.br
+.B - Les caractères spéciaux (", ', `, \\, *, &, #).
+.br
+.B - Les pipes (|) et redirections (>, >>, <).
+.br
+.B - Les séparateurs de commandes (;, &&, ||).
+.RE
+.SH VALEUR DE RETOUR
+.P
+Le shell renvoie le code de sortie de la dernière commande exécutée.
+.SH AUTEURS
+Votre Nom <your@email.com>
+.SH BUGS
+Aucun bug connu.
+.SH VOIR AUSSI
+.BR sh (1),
+.BR bash (1)
