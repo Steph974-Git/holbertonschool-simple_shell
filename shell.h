@@ -18,6 +18,7 @@ char **split_line(char *line);
 int execute_command(char **args, char *program_name, int line_number);
 
 /* Prototypes pour simple_shell.c */
+int _strlen(char *s)
 ssize_t read_command(char **line, size_t *len);
 int process_command(char *line, char *program_name, int line_number);
 
