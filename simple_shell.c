@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <unistd.h>
 
 /**
  * main - Point d'entrée du shell
@@ -11,17 +12,21 @@ int main(void)
 	size_t len = 0;
 	ssize_t nread;
 	char **args;
+	int interactive = isatty(STDIN_FILENO);
 
 	while (1)
 	{
-		printf("$ ");
-		fflush(stdout);
+		if (interactive)
+		{
+			printf("$ ");
+			fflush(stdout);
+		}
 
 		nread = getline(&line, &len, stdin);
 
 		if (nread == -1)
 		{
-			if (feof(stdin))
+			if (feof(stdin) && interactive)
 				printf("\n");
 			break;
 		}
@@ -29,10 +34,8 @@ int main(void)
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-
 		if (strlen(line) == 0)
 			continue;
-
 
 		args = split_line(line);
 		if (args == NULL)
@@ -40,9 +43,7 @@ int main(void)
 			perror("Memory allocation error");
 			continue;
 		}
-
 		execute_command(args);
-
 		free(args);
 	}
 	free(line);
