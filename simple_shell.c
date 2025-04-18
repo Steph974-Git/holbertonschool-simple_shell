@@ -5,6 +5,24 @@
 #include "shell.h"
 
 /**
+ * _strlen -  returns the length of a string
+ * @s: My first strlen!
+ * Return: i
+ */
+
+int _strlen(char *s)
+
+{
+	int i = 0;
+
+	while (s[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}
+
+/**
  * read_command - Lit une commande depuis l'entrée standard
  * @line: Pointeur vers la ligne de commande
  * @len: Pointeur vers la taille allouée
@@ -35,7 +53,7 @@ int process_command(char *line, char *program_name, int line_number)
 	char **args;
 	int status;
 
-	if (strlen(line) == 0)
+	if (_strlen(line) == 0)
 		return (0);
 
 	args = split_line(line);
