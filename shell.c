@@ -41,7 +41,7 @@ ssize_t read_command(char **line, size_t *len)
  *
  * Return: Statut d'exécution
  */
-int process_command(char *line, char *program_name, int line_number)
+int process_command(char *line, char *program_name)
 {
 	char **args;
 	int status;
@@ -56,7 +56,7 @@ int process_command(char *line, char *program_name, int line_number)
 		return (1);
 	}
 
-	status = execute_command(args, program_name, line_number);
+	status = execute_command(args, program_name);
 	free(args);
 
 	return (status);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 			break;
 		}
 
-		last_status = process_command(line, program_name, line_number);
+		last_status = process_command(line, program_name);
 	}
 
 	free(line);

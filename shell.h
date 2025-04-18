@@ -15,11 +15,11 @@ extern char **environ;
 char **split_line(char *line);
 
 /* Prototypes pour executor.c */
-int execute_command(char **args, char *program_name, int line_number);
+int execute_command(char **args, char *program_name);
 
 /* Prototypes pour simple_shell.c */
 void handle_sigint(int sig);
 ssize_t read_command(char **line, size_t *len);
-int process_command(char *line, char *program_name, int line_number);
+int process_command(char *line, char *program_name);
 
 #endif /* SHELL_H */

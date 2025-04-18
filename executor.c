@@ -12,7 +12,7 @@
  *
  * Return: Statut d'exécution
  */
-int execute_command(char **args, char *program_name, int line_number)
+int execute_command(char **args, char *program_name)
 {
 	pid_t child_pid;
 	int status;
@@ -32,8 +32,8 @@ int execute_command(char **args, char *program_name, int line_number)
 	{
 		if (execve(args[0], args, environ) == -1)
 		{
-			fprintf(stderr, "%s: %d: %s: not found\n",
-				program_name, line_number, args[0]);
+			fprintf(stderr, "%s: ", program_name);
+			fprintf(stderr, "No such file or directory\n");
 			exit(127); /* Code de sortie standard pour commande non trouvée */
 		}
 		exit(0); /* Ne sera jamais exécuté si execve réussit */
