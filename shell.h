@@ -11,6 +11,10 @@
 /* Déclaration externe de environ pour l'utiliser dans tous les fichiers */
 extern char **environ;
 
+/* Fonctions liées à l'environnement */
+char *find_command_in_path(char *command);
+char *_getenv(char *name);
+
 /* Prototypes pour parser.c */
 char **split_line(char *line);
 

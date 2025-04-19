@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "shell.h"
 
 /**
  * split_line - Splits a line into words (only keeps the first word)
