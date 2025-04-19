@@ -37,7 +37,6 @@ ssize_t read_command(char **line, size_t *len)
  * process_command - Traite et exécute une commande
  * @line: Ligne de commande à traiter
  * @program_name: Nom du programme shell
- * @line_number: Numéro de ligne actuel
  *
  * Return: Statut d'exécution
  */
@@ -89,8 +88,7 @@ int main(int argc, char **argv)
 
 		if (interactive)
 		{
-			printf("#cisfun$ ");
-			fflush(stdout);
+			write(STDOUT_FILENO, "#cisfun$ ", 9);
 		}
 
 		nread = read_command(&line, &len);

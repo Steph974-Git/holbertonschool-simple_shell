@@ -12,6 +12,8 @@ char *find_command_in_path(char *command)
 {
 	char *path, *path_copy, *dir, *full_path;
 
+	if (command == NULL)
+		return (NULL);
 	/* Si la commande contient un chemin, vérifier directement */
 	if (strchr(command, '/') != NULL)
 	{
@@ -21,7 +23,7 @@ char *find_command_in_path(char *command)
 	}
 
 	path = _getenv("PATH");
-	if (!path)
+	if (path == NULL || *path == '\0')
 		return (NULL);
 
 	path_copy = strdup(path);
@@ -37,9 +39,7 @@ char *find_command_in_path(char *command)
 			free(path_copy);
 			return (NULL);
 		}
-
 		sprintf(full_path, "%s/%s", dir, command);
-
 		if (access(full_path, X_OK) == 0)
 		{
 			free(path_copy);

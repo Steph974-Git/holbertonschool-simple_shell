@@ -10,29 +10,15 @@
  *
  * Return: Array of pointers to words (only contains the command)
  */
+
 char **split_line(char *line)
 {
-	char **array = NULL;
-	char *token;
+	char **array = malloc(2 * sizeof(char *));
 
-	array = malloc(2 * sizeof(char *));
-	if (array == NULL)
-	{
+	if (!array)
 		return (NULL);
-	}
 
-	token = strtok(line, " \t\n");
-
-	if (token != NULL)
-	{
-		array[0] = token;
-	}
-	else
-	{
-		array[0] = NULL;
-	}
-
-
+	array[0] = strtok(line, " \t\n");
 	array[1] = NULL;
 
 	return (array);
