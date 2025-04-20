@@ -1,58 +1,56 @@
-.TH SIMPLE_SHELL 1 "Avril 2025" "Version 1.0" "Manuel de l'utilisateur simple_shell"
-.SH NOM
-simple_shell \- interpréteur de commandes simple
+.TH SIMPLE_SHELL 1 "April 2025" "Version 1.0" "User Manual for simple_shell"
+.SH NAME
+simple_shell \- a simple UNIX command interpreter
 .SH SYNOPSIS
 .B simple_shell
 .SH DESCRIPTION
 .B simple_shell
-est un interpréteur de commandes simples UNIX. Il lit des commandes de l'entrée standard ou d'un fichier et les exécute.
-.SH UTILISATION
-Le shell s'exécute en mode interactif quand il lit des commandes depuis un terminal. Il affiche un prompt "$" quand il attend une commande.
+is a simple UNIX command interpreter. It reads commands from standard input or a file and executes them.
+.SH USAGE
+The shell operates in two modes:
 .P
-En mode non-interactif, le shell exécute les commandes qu'il reçoit depuis l'entrée standard, comme dans un pipe (ex: echo "/bin/ls" | ./simple_shell).
-.SH COMMANDES
-Le shell exécute les programmes spécifiés par leurs chemins absolus. Si la commande n'existe pas, une erreur est renvoyée.
+Interactive mode: The shell reads commands from a terminal and displays a prompt "$" when waiting for input.
 .P
-Exemples:
+Non-interactive mode: The shell reads commands from standard input, such as in a pipeline (e.g., echo "/bin/ls" | ./simple_shell).
+.SH COMMANDS
+The shell executes programs specified by their absolute paths. If the command does not exist, an error is returned.
+.P
+Examples:
 .P
 $ /bin/ls
 .P
 $ /bin/pwd
-.SH FONCTIONNALITÉS
+.SH FEATURES
 .P
-Le shell gère:
+The shell supports:
 .P
 .RS
-.B - L'exécution de commandes avec chemin absolu.
+.B - Execution of commands with absolute paths.
 .br
-.B - Les erreurs de commande.
+.B - Handling of command errors.
 .br
-.B - La fin de fichier (Ctrl+D).
+.B - End-of-file (Ctrl+D) handling.
 .RE
 .SH LIMITATIONS
 .P
-Le shell ne gère pas:
+The shell does not support:
 .P
 .RS
-.B - Les arguments aux commandes.
+.B - Command arguments.
 .br
-.B - La recherche de commandes dans PATH.
+.B - Searching for commands in PATH.
 .br
-.B - Les commandes intégrées comme cd, exit.
+.B - Built-in commands like cd, exit.
 .br
-.B - Les caractères spéciaux (", ', `, \\, *, &, #).
+.B - Special characters (", ', `, \\, *, &, #).
 .br
-.B - Les pipes (|) et redirections (>, >>, <).
+.B - Pipes (|) and redirections (>, >>, <).
 .br
-.B - Les séparateurs de commandes (;, &&, ||).
+.B - Command separators (;, &&, ||).
 .RE
-.SH VALEUR DE RETOUR
+.SH RETURN VALUE
 .P
-Le shell renvoie le code de sortie de la dernière commande exécutée.
-.SH AUTEURS
-Votre Nom <your@email.com>
-.SH BUGS
-Aucun bug connu.
-.SH VOIR AUSSI
-.BR sh (1),
-.BR bash (1)
+The shell returns the exit code of the last executed command.
+.SH AUTHORS
+Wassef Abdallah
+Stephane Paton
