@@ -22,6 +22,24 @@ void handle_sigint(int sig)
 *
 * Return: Nombre de caractères lus, -1 en cas d'erreur/EOF
 */
+ssize_t read_command(char **line, size_t *len)
+{
+	ssize_t nread;
+
+	nread = getline(line, len, stdin);
+	if (nread > 0 && (*line)[nread - 1] == '\n')
+		(*line)[nread - 1] = '\0';
+
+	return (nread);
+}
+
+/**
+* process_command - Traite et exécute une commande
+* @line: Ligne de commande à traiter
+* @program_name: Nom du programme shell
+*
+* Return: Statut d'exécution
+*/
 int process_command(char *line, char *program_name)
 {
     char **args;
@@ -96,7 +114,7 @@ int main(int argc, char **argv)
 		if (nread == -1)
 		{
 			if (interactive)
-				write(STDOUT_FILENO, "\n", 1);
+				printf("\n");
 			break;
 		}
 
@@ -104,10 +122,10 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    		break; /* Sortir de la boucle et terminer le shell */
+    	break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
 	free(line);
-	return (last_status == 2 ? 0 : last_status);
+	return (last_status);
 }
