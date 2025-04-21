@@ -4,16 +4,15 @@
 
 /**
 * exit_builtin - Implémente la commande intégrée "exit"
-* @line: Ligne de commande entrée par l'utilisateur
+* @args: Arguments de la commande entrée par l'utilisateur
 *
 * Return: 1 si la commande est "exit", 0 sinon
 */
-int exit_builtin(char *line)
+int exit_builtin(char **args)
 {
-	if (strcmp(line, "exit") == 0)
+	if (args && args[0] && strcmp(args[0], "exit") == 0)
 	{
-		free(line); /* Libérer la mémoire allouée pour la ligne */
-		exit(0);    /* Quitter le programme avec un statut de succès */
+		return (1); /* Retourne 1 pour indiquer de sortir du shell */
 	}
 	return (0); /* Retourne 0 si ce n'est pas "exit" */
 }

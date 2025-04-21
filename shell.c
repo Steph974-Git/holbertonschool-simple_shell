@@ -43,13 +43,9 @@ ssize_t read_command(char **line, size_t *len)
 int process_command(char *line, char *program_name)
 {
 	char **args;
-
 	int status;
 
 	if (strlen(line) == 0)
-		return (0);
-
-	if (exit_builtin(line))
 		return (0);
 
 	args = split_line(line);
@@ -57,6 +53,13 @@ int process_command(char *line, char *program_name)
 	{
 		perror("Memory allocation error");
 		return (1);
+	}
+
+	/* Vérifier les commandes intégrées */
+	if (exit_builtin(args))
+	{
+		free(args);
+		return (2); /* Code spécial pour indiquer exit */
 	}
 
 	status = execute_command(args, program_name);
@@ -109,6 +112,11 @@ int main(int argc, char **argv)
 		}
 
 		last_status = process_command(line, program_name);
+
+		if (last_status == 2) /* Code pour exit */
+		{
+    	break; /* Sortir de la boucle et terminer le shell */
+		}
 	}
 
 	free(line);

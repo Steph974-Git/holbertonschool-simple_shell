@@ -25,6 +25,8 @@ int execute_command(char **args, char *program_name);
 void handle_sigint(int sig);
 ssize_t read_command(char **line, size_t *len);
 int process_command(char *line, char *program_name);
-int exit_builtin(char *line);
+
+/* Prototypes pour builtins.c */
+int exit_builtin(char **args);
 
 #endif /* SHELL_H */
