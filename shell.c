@@ -22,50 +22,39 @@ void handle_sigint(int sig)
 *
 * Return: Nombre de caractères lus, -1 en cas d'erreur/EOF
 */
-ssize_t read_command(char **line, size_t *len)
-{
-	ssize_t nread;
-
-	nread = getline(line, len, stdin);
-	if (nread > 0 && (*line)[nread - 1] == '\n')
-		(*line)[nread - 1] = '\0';
-
-	return (nread);
-}
-
-/**
-* process_command - Traite et exécute une commande
-* @line: Ligne de commande à traiter
-* @program_name: Nom du programme shell
-*
-* Return: Statut d'exécution
-*/
 int process_command(char *line, char *program_name)
 {
-	char **args;
-	int status;
+    char **args;
+    int status;
 
-	if (strlen(line) == 0)
-		return (0);
+    if (strlen(line) == 0)
+        return (0);
 
-	args = split_line(line);
-	if (args == NULL)
-	{
-		perror("Memory allocation error");
-		return (1);
-	}
+    args = split_line(line);
+    if (args == NULL)
+    {
+        perror("Memory allocation error");
+        return (1);
+    }
 
-	/* Vérifier les commandes intégrées */
-	if (exit_builtin(args))
-	{
-		free(args);
-		return (2); /* Code spécial pour indiquer exit */
-	}
+    /* Vérifier les commandes intégrées */
+    if (exit_builtin(args))
+    {
+        free(args);
+        return (2); /* Code spécial pour indiquer exit */
+    }
 
-	status = execute_command(args, program_name);
-	free(args);
+    /* Vérifier si c'est la commande env */
+    if (env_builtin(args))
+    {
+        free(args);
+        return (0); /* Continuer l'exécution du shell */
+    }
 
-	return (status);
+    status = execute_command(args, program_name);
+    free(args);
+
+    return (status);
 }
 
 /**
@@ -99,7 +88,7 @@ int main(int argc, char **argv)
 
 		if (interactive)
 		{
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
+			write(STDOUT_FILENO, "#cisfun$ ", 10);
 		}
 
 		nread = read_command(&line, &len);
@@ -107,7 +96,7 @@ int main(int argc, char **argv)
 		if (nread == -1)
 		{
 			if (interactive)
-				printf("\n");
+				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
 
@@ -115,7 +104,7 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    		break; /* Sortir de la boucle et terminer le shell */
+    				break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 

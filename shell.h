@@ -28,5 +28,6 @@ int process_command(char *line, char *program_name);
 
 /* Prototypes pour builtins.c */
 int exit_builtin(char **args);
+int env_builtin(char **args);
 
 #endif /* SHELL_H */
