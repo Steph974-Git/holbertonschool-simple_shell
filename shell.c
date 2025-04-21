@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
 		if (interactive)
 		{
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
+			write(STDOUT_FILENO, "#cisfun$ ", 10;
 		}
 
 		nread = read_command(&line, &len);
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 		if (nread == -1)
 		{
 			if (interactive)
-				printf("\n");
+				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
 
@@ -115,10 +115,10 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    	break; /* Sortir de la boucle et terminer le shell */
+    				break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
 	free(line);
-	return (last_status);
+	return (last_status == 2 ? 0 : last_status);
 }
