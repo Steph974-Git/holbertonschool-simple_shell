@@ -62,6 +62,13 @@ int process_command(char *line, char *program_name)
 		return (2); /* Code spécial pour indiquer exit */
 	}
 
+	/* Vérifier si c'est la commande env */
+    if (env_builtin(args))
+    {
+        free(args);
+        return (0); /* Continuer l'exécution normale du shell */
+	}
+
 	status = execute_command(args, program_name);
 	free(args);
 
