@@ -63,10 +63,10 @@ int process_command(char *line, char *program_name)
 	}
 
 	/* Vérifier si c'est la commande env */
-    if (env_builtin(args))
-    {
-        free(args);
-        return (0); /* Continuer l'exécution normale du shell */
+	if (env_builtin(args))
+	{
+		free(args);
+		return (0); /* Continuer l'exécution normale du shell */
 	}
 
 	status = execute_command(args, program_name);
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 		if (nread == -1)
 		{
 			if (interactive)
-				printf("\n");
+				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    		break; /* Sortir de la boucle et terminer le shell */
+			break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
