@@ -42,37 +42,30 @@ ssize_t read_command(char **line, size_t *len)
 */
 int process_command(char *line, char *program_name)
 {
-    char **args;
-    int status;
+	char **args;
+	int status;
 
-    if (strlen(line) == 0)
-        return (0);
+	if (strlen(line) == 0)
+		return (0);
 
-    args = split_line(line);
-    if (args == NULL)
-    {
-        perror("Memory allocation error");
-        return (1);
-    }
+	args = split_line(line);
+	if (args == NULL)
+	{
+		perror("Memory allocation error");
+		return (1);
+	}
 
-    /* Vérifier les commandes intégrées */
-    if (exit_builtin(args))
-    {
-        free(args);
-        return (2); /* Code spécial pour indiquer exit */
-    }
+	/* Vérifier les commandes intégrées */
+	if (exit_builtin(args))
+	{
+		free(args);
+		return (2); /* Code spécial pour indiquer exit */
+	}
 
-    /* Vérifier si c'est la commande env */
-    if (env_builtin(args))
-    {
-        free(args);
-        return (0); /* Continuer l'exécution du shell */
-    }
+	status = execute_command(args, program_name);
+	free(args);
 
-    status = execute_command(args, program_name);
-    free(args);
-
-    return (status);
+	return (status);
 }
 
 /**
@@ -122,7 +115,7 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    			break; /* Sortir de la boucle et terminer le shell */
+    	break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
