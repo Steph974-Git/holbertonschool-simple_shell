@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
 		if (interactive)
 		{
-			write(STDOUT_FILENO, "#cisfun$ ", 10);
+			write(STDOUT_FILENO, "#cisfun$ ", 9);
 		}
 
 		nread = read_command(&line, &len);
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    				break; /* Sortir de la boucle et terminer le shell */
+    		break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
