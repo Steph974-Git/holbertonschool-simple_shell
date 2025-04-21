@@ -115,10 +115,10 @@ int main(int argc, char **argv)
 
 		if (last_status == 2) /* Code pour exit */
 		{
-    	break; /* Sortir de la boucle et terminer le shell */
+    		break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
 
 	free(line);
-	return (last_status);
+	return (last_status == 2 ? 0 : last_status);
 }
