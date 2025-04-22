@@ -35,13 +35,20 @@ void handle_sigsegv(int sig)
 */
 ssize_t read_command(char **line, size_t *len)
 {
-	ssize_t nread;
+    ssize_t nread;
 
-	nread = getline(line, len, stdin);
-	if (nread > 0 && (*line)[nread - 1] == '\n')
-		(*line)[nread - 1] = '\0';
+    /* Lire la ligne avec getline */
+    nread = getline(line, len, stdin);
+    
+    /* Si EOF ou erreur, retourner -1 */
+    if (nread == -1)
+        return (-1);
+    
+    /* Supprimer le newline s'il existe */
+    if (nread > 0 && (*line)[nread - 1] == '\n')
+        (*line)[nread - 1] = '\0';
 
-	return (nread);
+    return (nread);
 }
 
 /**
