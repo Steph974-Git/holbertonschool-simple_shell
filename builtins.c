@@ -21,8 +21,17 @@ int exit_builtin(char **args)
 		if (args[1] != NULL)
 		{
 			char *endptr;
+			long temp_exit_code;
 
-			exit_code = (int)strtol(args[1], &endptr, 10);
+			/* Vérifier s'il y a trop d'arguments */
+			if (args[2] != NULL)
+			{
+				fprintf(stderr, "./hsh: 1: exit: too many arguments\n");
+				return (2);  /* Code de retour pour erreur de syntaxe */
+			}
+
+			/* Convertir l'argument en nombre */
+			temp_exit_code = strtol(args[1], &endptr, 10);
 
 			/* Vérifier si la conversion est valide */
 			if (*endptr != '\0')
@@ -31,6 +40,9 @@ int exit_builtin(char **args)
 				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
 				return (2);  /* Code de retour spécial pour erreur */
 			}
+
+			/* Normaliser le code de sortie (entre 0 et 255) */
+			exit_code = (int)(temp_exit_code & 0xFF);
 		}
 
 		/* Dans main(), ce code sera utilisé comme valeur de retour du shell */
@@ -66,8 +78,8 @@ int env_builtin(char **args)
 }
 
 /**
- * pid_builtin - Implémente la commande intégrée "pid" pour
- * afficher le PID du shell
+ * pid_builtin - Implémente la commande intégrée "pid"
+ * pour afficher le PID du shell
  * @args: Arguments de la commande entrée par l'utilisateur
  *
  * Return: 1 si la commande est "pid" et a été exécutée, 0 sinon
