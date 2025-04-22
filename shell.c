@@ -12,7 +12,7 @@
 void handle_sigint(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n#cisfun$ ", 10);
+	write(STDOUT_FILENO, "\n$ ", 3);
 }
 
 /**
@@ -107,11 +107,8 @@ int main(int argc, char **argv)
 	size_t len = 0;
 	ssize_t nread;
 	int interactive = isatty(STDIN_FILENO);
-
 	int line_number = 0;
-
 	char *program_name = argv[0];
-
 	int last_status = 0;
 
 	signal(SIGINT, handle_sigint);
@@ -139,6 +136,7 @@ int main(int argc, char **argv)
 			break; /* Sortir de la boucle et terminer le shell */
 		}
 	}
-	free(line);
+	if (line != NULL)
+		free(line);
 	return (0);  /* Ajoutez cette ligne de retour */
 }
