@@ -16,7 +16,7 @@ char *find_command_in_path(char *command)
 		return (NULL);
 
 	/* Si la commande contient un /, c'est un chemin direct */
-	if (strchr(command, '/') != NULL)
+	if (strncmp(command, "./", 2) == 0 || strncmp(command, "../", 3) == 0)
 	{
 		if (access(command, X_OK) == 0)
 			return (strdup(command));
