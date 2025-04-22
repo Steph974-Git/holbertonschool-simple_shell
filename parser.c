@@ -10,17 +10,23 @@
  *
  * Return: Array of pointers to words (command and its arguments)
  */
-/**
- * split_line - Splits a line into words to handle command with arguments
- * @line: The string to be split
- *
- * Return: Array of pointers to words (command and its arguments)
- */
+
 char **split_line(char *line)
 {
     char **array = NULL;
     char *token, *line_copy;
     int count = 0, i = 0;
+
+    /* Vérifier si la ligne est vide ou ne contient que des espaces */
+    if (strlen(line) == 0 || strspn(line, " \t\n") == strlen(line))
+    {
+        /* Retourner un tableau vide avec juste NULL */
+        array = malloc(sizeof(char *));
+        if (!array)
+            return (NULL);
+        array[0] = NULL;
+        return (array);
+    }
 
     /* Vérifier les caractères de contrôle ou invalides */
     for (i = 0; line[i] != '\0'; i++)

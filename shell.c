@@ -147,5 +147,5 @@ int main(int argc, char **argv)
 	}
 
 	free(line);
-	return (0); /* Toujours retourner 0 à la fin du programme */
+	return (last_status == 99 ? 0 : last_status);
 }

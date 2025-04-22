@@ -14,6 +14,9 @@ char *find_command_in_path(char *command)
 
 	if (command == NULL)
 		return (NULL);
+	/* Si la commande commence par ./ ou ../ */
+	if (strncmp(command, "./", 2) == 0 || strncmp(command, "../", 3) == 0)
+		return (NULL);
 	/* Si la commande contient un chemin, vérifier directement */
 	if (strchr(command, '/') != NULL)
 	{
@@ -21,15 +24,12 @@ char *find_command_in_path(char *command)
 			return (strdup(command));
 		return (NULL);
 	}
-
 	path = _getenv("PATH");
 	if (path == NULL || *path == '\0')
 		return (NULL);
-
 	path_copy = strdup(path);
 	if (!path_copy)
 		return (NULL);
-
 	dir = strtok(path_copy, ":");
 	while (dir)
 	{
