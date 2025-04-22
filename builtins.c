@@ -10,11 +10,11 @@
 */
 int exit_builtin(char **args)
 {
-	if (args && args[0] && strcmp(args[0], "exit") == 0 && args[1] == NULL)
+	if (args && args[0] && strcmp(args[0], "exit") == 0)
 	{
 		return (1);
 	}
-	return (0); /* Retourne 0 si ce n'est pas "exit" */
+	return (0);
 }
 
 /**

@@ -59,7 +59,8 @@ int process_command(char *line, char *program_name)
 	if (exit_builtin(args))
 	{
 		free(args);
-		return (2); /* Code spécial pour indiquer exit */
+		free(line); /* Libérez la ligne ici aussi */
+		exit(0); /* Sortie immédiate avec statut 0 */
 	}
 
 	/* Vérifier si c'est la commande env */
@@ -127,5 +128,5 @@ int main(int argc, char **argv)
 	}
 
 	free(line);
-	return (last_status == 2 ? 0 : last_status);
+	return (0); /* Toujours retourner 0 à la fin du programme */
 }
