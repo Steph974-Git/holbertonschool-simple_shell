@@ -12,7 +12,18 @@
 void handle_sigint(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n#cisfun$ ", 10);
+	write(STDOUT_FILENO, "\n$ ", 3);
+}
+
+/**
+* handle_sigsegv - Gestionnaire de signal pour SIGSEGV (Segmentation fault)
+* @sig: Numéro du signal
+*/
+void handle_sigsegv(int sig)
+{
+	(void)sig;
+	write(STDERR_FILENO, "Segmentation fault\n", 19);
+	exit(1);
 }
 
 /**
@@ -26,7 +37,14 @@ ssize_t read_command(char **line, size_t *len)
 {
 	ssize_t nread;
 
+	/* Lire la ligne avec getline */
 	nread = getline(line, len, stdin);
+
+	/* Si EOF ou erreur, retourner -1 */
+	if (nread == -1)
+		return (-1);
+
+	/* Supprimer le newline s'il existe */
 	if (nread > 0 && (*line)[nread - 1] == '\n')
 		(*line)[nread - 1] = '\0';
 
@@ -34,45 +52,76 @@ ssize_t read_command(char **line, size_t *len)
 }
 
 /**
-* process_command - Traite et exécute une commande
-* @line: Ligne de commande à traiter
-* @program_name: Nom du programme shell
-*
-* Return: Statut d'exécution
-*/
-int process_command(char *line, char *program_name)
+ * process_command - Traite et exécute une commande
+ * @line: Ligne de commande à traiter
+ * @program_name: Nom du programme shell
+ * @cmd_count: Compteur de commandes exécutées
+ *
+ * Return: Statut d'exécution
+ */
+int process_command(char *line, char *program_name, int cmd_count)
 {
-	char **args;
-	int status;
+    char **args;
+    int status;
+    char *cmd_path;
 
-	if (strlen(line) == 0)
-		return (0);
+    if (strlen(line) == 0)
+        return (0);
 
-	args = split_line(line);
-	if (args == NULL)
+    args = split_line(line);
+    if (args == NULL)
+    {
+        perror("Memory allocation error");
+        return (1);
+    }
+
+    if (args[0] == NULL)
+    {
+        free_args(args);
+        return (0);
+    }
+
+    /* Vérifier les commandes intégrées */
+    if (exit_builtin(args))
+    {
+        free_args(args);
+        return (-1);
+    }
+
+    /* Vérifier si c'est la commande env */
+    if (env_builtin(args))
+    {
+        free_args(args);
+        return (0);
+    }
+
+	/* Vérifier si c'est la commande pid */
+	if (pid_builtin(args))
 	{
-		perror("Memory allocation error");
-		return (1);
+    	free_args(args);
+    	return (0);
 	}
+	
+    /* Rechercher la commande dans PATH */
+    if (strchr(args[0], '/') == NULL)
+    {
+        cmd_path = find_command_in_path(args[0]);
+        if (cmd_path == NULL)
+        {
+            status = command_error(args, program_name, cmd_count);
+            free_args(args);
+            return (status);
+        }
+        status = execute_command(args, program_name, cmd_count);
+        free(cmd_path);
+    }
+    else
+    {
+        status = execute_command(args, program_name, cmd_count);
+    }
 
-	/* Vérifier les commandes intégrées */
-	if (exit_builtin(args))
-	{
-		free(args);
-		return (2); /* Code spécial pour indiquer exit */
-	}
-
-	/* Vérifier si c'est la commande env */
-	if (env_builtin(args))
-	{
-		free(args);
-		return (0); /* Continuer l'exécution normale du shell */
-	}
-
-	status = execute_command(args, program_name);
-	free(args);
-
-	return (status);
+    free_args(args);
+    return (status);
 }
 
 /**
@@ -85,47 +134,43 @@ int process_command(char *line, char *program_name)
 int main(int argc, char **argv)
 {
 	char *line = NULL;
-
 	size_t len = 0;
 	ssize_t nread;
 	int interactive = isatty(STDIN_FILENO);
-
-	int line_number = 0;
-
+	int cmd_count = 1;  /* Ajoutez un compteur de commandes */
 	char *program_name = argv[0];
-
 	int last_status = 0;
 
 	signal(SIGINT, handle_sigint);
-
+	signal(SIGSEGV, handle_sigsegv);
+	signal(SIGTERM, SIG_IGN);
 	(void)argc;
-
 	while (1)
 	{
-		line_number++;
-
 		if (interactive)
-		{
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
-		}
-
+			write(STDOUT_FILENO, "$ ", 2);
 		nread = read_command(&line, &len);
-
 		if (nread == -1)
 		{
 			if (interactive)
 				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
-
-		last_status = process_command(line, program_name);
-
-		if (last_status == 2) /* Code pour exit */
+		if (strlen(line) == 0)
 		{
-			break; /* Sortir de la boucle et terminer le shell */
+			cmd_count++;
+			continue;
+		}
+		last_status = process_command(line, program_name, cmd_count);
+		cmd_count++;
+
+		if (last_status == -1)  /* Changez le code de sortie pour exit */
+		{
+			last_status = 0;
+			break;
 		}
 	}
-
-	free(line);
-	return (last_status == 2 ? 0 : last_status);
+	if (line != NULL)
+		free(line);
+	return (last_status);  /* Retournez le dernier statut */
 }

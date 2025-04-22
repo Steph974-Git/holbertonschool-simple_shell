@@ -5,45 +5,87 @@
 #include "shell.h"
 
 /**
- * split_line - Splits a line into words to handle command with arguments
- * @line: The string to be split
+ * split_line - Divise une ligne en mots pour traiter les commandes avec arguments
+ * @line: La chaîne à diviser
  *
- * Return: Array of pointers to words (command and its arguments)
+ * Return: Tableau de pointeurs vers les mots (commande et ses arguments)
  */
 char **split_line(char *line)
 {
 	char **array = NULL;
-	char *token, *line_copy;
-	int count = 0, i = 0;
+	char *token;
+	int count = 0, i;
+	char *line_copy;
 
-	/* Créer une copie de la ligne pour le premier comptage */
+	if (line == NULL || strlen(line) == 0)
+		return (NULL);
+	
+	/* Compter le nombre de mots pour allouer la mémoire exacte */
 	line_copy = strdup(line);
 	if (!line_copy)
 		return (NULL);
-
-	/* Compter le nombre de tokens */
+	
 	token = strtok(line_copy, " \t\n");
-	while (token)
+	while (token != NULL)
 	{
 		count++;
 		token = strtok(NULL, " \t\n");
 	}
 	free(line_copy);
-
-	/* Allouer l'espace exact nécessaire (count + 1 pour le NULL final) */
-	array = malloc((count + 1) * sizeof(char *));
-	if (!array)
+	
+	/* Allouer le tableau de pointeurs (un de plus pour le NULL final) */
+	array = malloc(sizeof(char *) * (count + 1));
+	if (array == NULL)
 		return (NULL);
 
-	/* Remplir le tableau avec les tokens */
-	token = strtok(line, " \t\n");
-	while (token && i < count)
+	/* Remplir le tableau avec des copies des mots */
+	i = 0;
+	line_copy = strdup(line);
+	if (!line_copy)
 	{
-		array[i] = token;
+		free(array);
+		return (NULL);
+	}
+	
+	token = strtok(line_copy, " \t\n");
+	while (token != NULL && i < count)
+	{
+		array[i] = strdup(token);
+		if (array[i] == NULL)
+		{
+			/* Libérer toute la mémoire allouée en cas d'erreur */
+			while (i > 0)
+			{
+				i--;
+				free(array[i]);
+			}
+			free(array);
+			free(line_copy);
+			return (NULL);
+		}
 		i++;
 		token = strtok(NULL, " \t\n");
 	}
-	array[i] = NULL; /* Terminer le tableau par NULL */
+	
+	array[i] = NULL;  /* Dernier élément NULL pour marquer la fin */
+	free(line_copy);
 
 	return (array);
+}
+
+/**
+ * free_args - Libère la mémoire allouée pour un tableau d'arguments
+ * @args: Tableau d'arguments à libérer
+ */
+void free_args(char **args)
+{
+	int i;
+
+	if (args == NULL)
+		return;
+
+	for (i = 0; args[i] != NULL; i++)
+		free(args[i]);
+
+	free(args);
 }
