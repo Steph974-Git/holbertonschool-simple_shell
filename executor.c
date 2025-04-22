@@ -25,29 +25,10 @@ int execute_command(char **args, char *program_name)
     int status;
     char *cmd_path = NULL;
     int need_free = 0;
-    int i = 0;
 
     if (args[0] == NULL)
         return (0);
     
-    /* Vérifier s'il y a des caractères invalides dans la commande */
-    for (i = 0; args[0][i] != '\0'; i++)
-    {
-        if (args[0][i] < 32 && args[0][i] != '\t' && args[0][i] != '\n' && args[0][i] != ' ')
-        {
-            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
-            return (127);
-        }
-    }
-    
-    /* Vérifier si c'est une commande interne qui a échappé à process_command */
-    if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "env") == 0)
-    {
-        /* Ceci ne devrait jamais arriver car process_command() doit intercepter ces commandes */
-        fprintf(stderr, "Error: Built-in command reached execute_command\n");
-        return (1);
-    }
-
     /* Chercher la commande dans PATH si c'est un nom simple */
     if (strchr(args[0], '/') == NULL)
     {
@@ -70,35 +51,35 @@ int execute_command(char **args, char *program_name)
         cmd_path = args[0];
     }
 
-	/* À ce stade, on sait que la commande existe, donc on peut fork */
-	child_pid = fork();
+    /* À ce stade, on sait que la commande existe, donc on peut fork */
+    child_pid = fork();
 
-	if (child_pid == -1)
-	{
-		perror("Error");
-		if (need_free)
-			free(cmd_path);
-		return (1);
-	}
+    if (child_pid == -1)
+    {
+        perror("Error");
+        if (need_free)
+            free(cmd_path);
+        return (1);
+    }
 
-	if (child_pid == 0)
-	{
-		if (execve(cmd_path, args, environ) == -1)
-		{
-			fprintf(stderr, "%s: No such file or directory\n", program_name);
-			if (need_free)
-				free(cmd_path);
-			exit(127);
-		}
-	}
-	else
-	{
-		waitpid(child_pid, &status, 0);
-		if (need_free)
-			free(cmd_path);
-		
-		return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
-	}
+    if (child_pid == 0)
+    {
+        if (execve(cmd_path, args, environ) == -1)
+        {
+            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            if (need_free)
+                free(cmd_path);
+            exit(127);
+        }
+    }
+    else
+    {
+        waitpid(child_pid, &status, 0);
+        if (need_free)
+            free(cmd_path);
+        
+        return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
+    }
 
-	return (0);
+    return (0);
 }
