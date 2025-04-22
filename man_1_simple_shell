@@ -1,56 +1,125 @@
-.TH SIMPLE_SHELL 1 "April 2025" "Version 1.0" "User Manual for simple_shell"
+.TH SIMPLE_SHELL 1 "April 2025" "Version 1.0" "Simple Shell Manual"
 .SH NAME
 simple_shell \- a simple UNIX command interpreter
 .SH SYNOPSIS
 .B simple_shell
 .SH DESCRIPTION
 .B simple_shell
-is a simple UNIX command interpreter. It reads commands from standard input or a file and executes them.
+(or
+.B hsh)
+is a basic UNIX command interpreter. It can be run interactively (waiting for user input) or non-interactively (via a pipeline or redirected input). It reads commands from standard input or a file and executes them.
+
 .SH USAGE
 The shell operates in two modes:
-.P
-Interactive mode: The shell reads commands from a terminal and displays a prompt "$" when waiting for input.
-.P
-Non-interactive mode: The shell reads commands from standard input, such as in a pipeline (e.g., echo "/bin/ls" | ./simple_shell).
-.SH COMMANDS
-The shell executes programs specified by their absolute paths. If the command does not exist, an error is returned.
-.P
-Examples:
-.P
-$ /bin/ls
-.P
-$ /bin/pwd
+
+.PP
+.B Interactive mode:
+The shell displays a prompt ("#cisfun$") and waits for user input. It handles Ctrl+C (SIGINT) gracefully by redisplaying the prompt instead of terminating.
+
+.PP
+.B Non-interactive mode:
+The shell reads commands from standard input, such as:
+.nf
+$ echo "/bin/ls" | ./simple_shell
+.fi
+
+.SH COMMAND EXECUTION
+When a command is entered, the shell processes it as follows:
+.IP \[bu] 2
+If it is a built-in command, it is executed internally.
+.IP \[bu] 2
+If the command contains a '/', it is treated as a path and executed directly.
+.IP \[bu] 2
+Otherwise, the shell searches for it in the directories listed in the PATH environment variable.
+
+The command is tokenized using spaces. Quotes and escape characters are not supported.
+
+If the command is found and has execute permission, it is executed. Otherwise, an appropriate error message is printed.
+
+.SH BUILT-IN COMMANDS
+.TP
+.B exit [status]
+Exit the shell. Optionally takes a numeric argument as the exit status.
+
+.TP
+.B env
+Print the current environment variables.
+
+.TP
+.B pid
+Print the process ID (PID) of the current shell instance.
+
 .SH FEATURES
-.P
-The shell supports:
-.P
-.RS
-.B - Execution of commands with absolute paths.
-.br
-.B - Handling of command errors.
-.br
-.B - End-of-file (Ctrl+D) handling.
-.RE
+.TP
+.B - Execution of commands with absolute or relative paths.
+.TP
+.B - PATH resolution for external commands.
+.TP
+.B - Built-in commands (exit, env, pid).
+.TP
+.B - Graceful handling of SIGINT (Ctrl+C).
+.TP
+.B - End-of-file (Ctrl+D) detection.
+.TP
+.B - Minimal command parsing (space-separated arguments only).
+
 .SH LIMITATIONS
-.P
-The shell does not support:
-.P
-.RS
-.B - Command arguments.
-.br
-.B - Searching for commands in PATH.
-.br
-.B - Built-in commands like cd, exit.
-.br
-.B - Special characters (", ', `, \\, *, &, #).
-.br
-.B - Pipes (|) and redirections (>, >>, <).
-.br
-.B - Command separators (;, &&, ||).
-.RE
-.SH RETURN VALUE
-.P
-The shell returns the exit code of the last executed command.
+.TP
+.B - No support for advanced syntax (quotes, escapes, variables).
+.TP
+.B - No command chaining (;, &&, ||).
+.TP
+.B - No redirection (>, >>, <) or pipes (|).
+.TP
+.B - No job control or background execution (&).
+.TP
+.B - Limited argument support for built-in commands (e.g., exit only takes one argument if any).
+
+.SH ENVIRONMENT
+.TP
+.B PATH
+A colon-separated list of directories that the shell searches when locating commands.
+
+.SH EXIT STATUS
+The shell returns:
+.IP \[bu] 2
+0 for successful command execution.
+.IP \[bu] 2
+127 for "Command not found" or "No such file or directory" errors.
+.IP \[bu] 2
+The exit status of the last executed command, if it was successful.
+
+.SH EXAMPLES
+.TP
+.B Interactive mode:
+.nf
+$ ./hsh
+#cisfun$ ls -l
+#cisfun$ pid
+12345
+#cisfun$ exit
+.fi
+
+.TP
+.B Non-interactive mode:
+.nf
+$ echo "env" | ./hsh
+$ echo -e "pid\\nexit" | ./hsh
+.fi
+
+.SH SIGNALS
+.TP
+.B SIGINT
+The shell captures Ctrl+C (SIGINT) to prevent abrupt termination and redisplays the prompt.
+
+.SH BUGS
+.TP
+.B - The exit command only partially supports arguments. It accepts a single numeric argument but doesn't handle errors or invalid inputs gracefully.
+.TP
+.B - Some unused functions may exist in the code, reserved for future features.
+.TP
+.B - Memory leaks may occur if the shell is interrupted without proper cleanup.
+
 .SH AUTHORS
-Wassef Abdallah
+Wassef Abdallah  
 Stephane Paton
