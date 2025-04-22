@@ -38,3 +38,4 @@ echo "Return code: $?"
 
 # Clean up
 rm temp_script.sh
+

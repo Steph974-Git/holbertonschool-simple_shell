@@ -8,10 +8,12 @@
 /**
  * exit_builtin - Implémente la commande intégrée "exit"
  * @args: Arguments de la commande entrée par l'utilisateur
+ * @program_name: Nom du programme shell (pour les messages d'erreur)
  *
  * Return: Code de sortie spécial pour indiquer exit
  */
-int exit_builtin(char **args)
+
+int exit_builtin(char **args, char *program_name)
 {
 	int exit_code = 0;
 
@@ -26,7 +28,7 @@ int exit_builtin(char **args)
 			/* Vérifier s'il y a trop d'arguments */
 			if (args[2] != NULL)
 			{
-				fprintf(stderr, "./hsh: 1: exit: too many arguments\n");
+				fprintf(stderr, "%s: 1: exit: too many arguments\n", program_name);
 				return (2);  /* Code de retour pour erreur de syntaxe */
 			}
 
@@ -37,7 +39,8 @@ int exit_builtin(char **args)
 			if (*endptr != '\0')
 			{
 				/* Argument non numérique, afficher un message d'erreur */
-				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
+				fprintf(stderr, "%s: 1: exit: Illegal number: %s\n",
+					program_name, args[1]);
 				return (2);  /* Code de retour spécial pour erreur */
 			}
 

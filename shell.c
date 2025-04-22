@@ -84,7 +84,7 @@ int process_command(char *line, char *program_name, int cmd_count)
    }
 
    /* Vérifier les commandes intégrées */
-   exit_status = exit_builtin(args);
+   exit_status = exit_builtin(args, program_name);
    if (exit_status)
    {
 	   if (exit_status == 2)  /* Cas d'erreur de syntaxe */
