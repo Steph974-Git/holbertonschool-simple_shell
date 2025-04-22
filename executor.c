@@ -94,8 +94,12 @@ int execute_command(char **args, char *program_name)
 	else
 	{
 		waitpid(child_pid, &status, 0);
+		printf("DEBUG: Child returned status: WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d, WTERMSIG=%d\n", 
+			   WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status), WTERMSIG(status));
+		
 		if (need_free)
 			free(cmd_path);
+		
 		return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
 	}
 

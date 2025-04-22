@@ -70,7 +70,7 @@ int process_command(char *line, char *program_name)
 	if (exit_builtin(args))
 	{
 		free(args);
-		return (2); /* Code spécial pour indiquer exit */
+		return (99); /* Code spécial pour indiquer exit */
 	}
 
 	/* Vérifier si c'est la commande env */
@@ -81,6 +81,7 @@ int process_command(char *line, char *program_name)
 	}
 
 	status = execute_command(args, program_name);
+	printf("DEBUG: Command returned status %d\n", status);
 	free(args);
 
 	return (status);
@@ -109,6 +110,7 @@ int main(int argc, char **argv)
 
     signal(SIGINT, handle_sigint);
     signal(SIGSEGV, handle_sigsegv);
+	signal(SIGTERM, SIG_IGN);
 
     (void)argc;
 
@@ -132,7 +134,7 @@ int main(int argc, char **argv)
 
 		last_status = process_command(line, program_name);
 
-		if (last_status == 2) /* Code pour exit */
+		if (last_status == 99) /* Code pour exit */
 		{
 			break; /* Sortir de la boucle et terminer le shell */
 		}
