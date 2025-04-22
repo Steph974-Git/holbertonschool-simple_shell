@@ -16,6 +16,17 @@ void handle_sigint(int sig)
 }
 
 /**
+* handle_sigsegv - Gestionnaire de signal pour SIGSEGV (Segmentation fault)
+* @sig: Numéro du signal
+*/
+void handle_sigsegv(int sig)
+{
+    (void)sig;
+    write(STDERR_FILENO, "Segmentation fault\n", 19);
+    exit(1);
+}
+
+/**
 * read_command - Lit une commande depuis l'entrée standard
 * @line: Pointeur vers la ligne de commande
 * @len: Pointeur vers la taille allouée
@@ -84,21 +95,22 @@ int process_command(char *line, char *program_name)
 */
 int main(int argc, char **argv)
 {
-	char *line = NULL;
+    char *line = NULL;
 
-	size_t len = 0;
-	ssize_t nread;
-	int interactive = isatty(STDIN_FILENO);
+    size_t len = 0;
+    ssize_t nread;
+    int interactive = isatty(STDIN_FILENO);
 
-	int line_number = 0;
+    int line_number = 0;
 
-	char *program_name = argv[0];
+    char *program_name = argv[0];
 
-	int last_status = 0;
+    int last_status = 0;
 
-	signal(SIGINT, handle_sigint);
+    signal(SIGINT, handle_sigint);
+    signal(SIGSEGV, handle_sigsegv);
 
-	(void)argc;
+    (void)argc;
 
 	while (1)
 	{

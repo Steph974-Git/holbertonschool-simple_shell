@@ -22,10 +22,10 @@ char **split_line(char *line)
     char *token, *line_copy;
     int count = 0, i = 0;
 
-    /* Vérifier les caractères de contrôle qui peuvent venir des touches fléchées */
+    /* Vérifier les caractères de contrôle ou invalides */
     for (i = 0; line[i] != '\0'; i++)
     {
-        if (line[i] < 32 && line[i] != '\t' && line[i] != '\n')
+        if (line[i] < 32 && line[i] != '\t' && line[i] != '\n' && line[i] != ' ')
         {
             /* Retourner un tableau vide avec juste NULL */
             array = malloc(sizeof(char *));

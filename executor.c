@@ -25,9 +25,20 @@ int execute_command(char **args, char *program_name)
     int status;
     char *cmd_path = NULL;
     int need_free = 0;
+    int i = 0;
 
     if (args[0] == NULL)
         return (0);
+    
+    /* Vérifier s'il y a des caractères invalides dans la commande */
+    for (i = 0; args[0][i] != '\0'; i++)
+    {
+        if (args[0][i] < 32 && args[0][i] != '\t' && args[0][i] != '\n' && args[0][i] != ' ')
+        {
+            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            return (127);
+        }
+    }
     
     /* Vérifier si c'est une commande interne qui a échappé à process_command */
     if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "env") == 0)
