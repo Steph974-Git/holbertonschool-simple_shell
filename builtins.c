@@ -13,7 +13,7 @@
 */
 int exit_builtin(char **args)
 {
-	if (args && args[0] && strcmp(args[0], "exit") == 0)
+	if (args && args[0] && strcmp(args[0], "exit") == 0 && args[1] == NULL)
 	{
 		exit(0); /* Retourne 1 pour indiquer exit */
 	}
