@@ -146,6 +146,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	free(line);
-	return (last_status == 99 ? 0 : last_status);
+	if (last_status == 99) /* Code pour exit */
+	{
+		free(line);  /* Libérer la ligne avant de sortir */
+		return (0);  /* Sortir avec succès */
+	}
 }

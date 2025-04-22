@@ -15,8 +15,7 @@ int exit_builtin(char **args)
 {
 	if (args && args[0] && strcmp(args[0], "exit") == 0)
 	{
-		/* Terminaison directe du processus avec statut 0 */
-		exit(0);
+		return (1); /* Retourne 1 pour indiquer exit */
 	}
 	return (0);
 }
