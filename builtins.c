@@ -9,21 +9,37 @@
  * exit_builtin - Implémente la commande intégrée "exit"
  * @args: Arguments de la commande entrée par l'utilisateur
  *
- * Return: 1 si la commande est "exit", 0 sinon
+ * Return: Code de sortie spécial pour indiquer exit
  */
 int exit_builtin(char **args)
 {
+	int exit_code = 0;
+
 	if (args && args[0] && strcmp(args[0], "exit") == 0)
 	{
-		/* Code pour gérer exit avec un argument numérique optionnel */
+		/* Gestion de l'argument numérique optionnel */
 		if (args[1] != NULL)
 		{
-			/* Traitement éventuel d'un code de sortie comme "exit 98" */
-			/* Pour l'instant on ne fait rien avec args[1] */
+			char *endptr;
+
+			exit_code = (int)strtol(args[1], &endptr, 10);
+
+			/* Vérifier si la conversion est valide */
+			if (*endptr != '\0')
+			{
+				/* Argument non numérique, afficher un message d'erreur */
+				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
+				return (2);  /* Code de retour spécial pour erreur */
+			}
 		}
-		return (1); /* Indique de quitter le shell */
+
+		/* Dans main(), ce code sera utilisé comme valeur de retour du shell */
+		exit_code = (exit_code << 8) | 1;
+		/* Le bit moins significatif indique exit, les autres contiennent le code */
+
+		return (exit_code);  /* Retourne le code combiné */
 	}
-	return (0);
+	return (0);  /* Ce n'est pas la commande exit */
 }
 
 /**

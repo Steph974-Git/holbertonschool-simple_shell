@@ -52,76 +52,92 @@ ssize_t read_command(char **line, size_t *len)
 }
 
 /**
- * process_command - Traite et exécute une commande
- * @line: Ligne de commande à traiter
- * @program_name: Nom du programme shell
- * @cmd_count: Compteur de commandes exécutées
- *
- * Return: Statut d'exécution
- */
+* process_command - Traite et exécute une commande
+* @line: Ligne de commande à traiter
+* @program_name: Nom du programme shell
+* @cmd_count: Compteur de commandes exécutées
+*
+* Return: Statut d'exécution
+*/
 int process_command(char *line, char *program_name, int cmd_count)
 {
-    char **args;
-    int status;
-    char *cmd_path;
+   char **args;
+   int status;
+   char *cmd_path;
+   int exit_status; /* Déclarez toutes les variables au début */
+   int actual_exit_code;
 
-    if (strlen(line) == 0)
-        return (0);
+   if (strlen(line) == 0)
+	   return (0);
 
-    args = split_line(line);
-    if (args == NULL)
-    {
-        perror("Memory allocation error");
-        return (1);
-    }
+   args = split_line(line);
+   if (args == NULL)
+   {
+	   perror("Memory allocation error");
+	   return (1);
+   }
 
-    if (args[0] == NULL)
-    {
-        free_args(args);
-        return (0);
-    }
+   if (args[0] == NULL)
+   {
+	   free_args(args);
+	   return (0);
+   }
 
-    /* Vérifier les commandes intégrées */
-    if (exit_builtin(args))
-    {
-        free_args(args);
-        return (-1);
-    }
+   /* Vérifier les commandes intégrées */
+   exit_status = exit_builtin(args);
+   if (exit_status)
+   {
+	   if (exit_status == 2)  /* Cas d'erreur de syntaxe */
+	   {
+		   free_args(args);
+		   return (2);
+	   }
 
-    /* Vérifier si c'est la commande env */
-    if (env_builtin(args))
-    {
-        free_args(args);
-        return (0);
-    }
+	   /* Extraire le code de sortie réel */
+	   actual_exit_code = exit_status >> 8;
+	   free_args(args);
 
-	/* Vérifier si c'est la commande pid */
-	if (pid_builtin(args))
-	{
-    	free_args(args);
-    	return (0);
-	}
-	
-    /* Rechercher la commande dans PATH */
-    if (strchr(args[0], '/') == NULL)
-    {
-        cmd_path = find_command_in_path(args[0]);
-        if (cmd_path == NULL)
-        {
-            status = command_error(args, program_name, cmd_count);
-            free_args(args);
-            return (status);
-        }
-        status = execute_command(args, program_name, cmd_count);
-        free(cmd_path);
-    }
-    else
-    {
-        status = execute_command(args, program_name, cmd_count);
-    }
+	   /* Le bit 0 indique si c'est un exit normal */
+	   if (exit_status & 1)
+		   return (-actual_exit_code);  /* Code négatif pour indiquer exit avec valeur */
 
-    free_args(args);
-    return (status);
+	   return (exit_status);
+   }
+
+   /* Vérifier si c'est la commande env */
+   if (env_builtin(args))
+   {
+	   free_args(args);
+	   return (0);
+   }
+
+   /* Vérifier si c'est la commande pid */
+   if (pid_builtin(args))
+   {
+	   free_args(args);
+	   return (0);
+   }
+   
+   /* Rechercher la commande dans PATH */
+   if (strchr(args[0], '/') == NULL)
+   {
+	   cmd_path = find_command_in_path(args[0]);
+	   if (cmd_path == NULL)
+	   {
+		   status = command_error(args, program_name, cmd_count);
+		   free_args(args);
+		   return (status);
+	   }
+	   status = execute_command(args, program_name, cmd_count);
+	   free(cmd_path);
+   }
+   else
+   {
+	   status = execute_command(args, program_name, cmd_count);
+   }
+
+   free_args(args);
+   return (status);
 }
 
 /**
@@ -164,9 +180,18 @@ int main(int argc, char **argv)
 		last_status = process_command(line, program_name, cmd_count);
 		cmd_count++;
 
-		if (last_status == -1)  /* Changez le code de sortie pour exit */
+		if (last_status < 0)  /* Exit avec un code spécifique */
 		{
-			last_status = 0;
+			last_status = -last_status;  /* Convertir en positif pour le vrai exit */
+			break;
+		}
+		else if (last_status == 2)  /* Erreur de syntaxe dans exit */
+		{
+			/* Continuer l'exécution */
+		}
+		else if (last_status == 1)  /* Exit simple sans code */
+		{
+			last_status = 0;  /* Exit avec succès par défaut */
 			break;
 		}
 	}
