@@ -10,9 +10,9 @@
 */
 int exit_builtin(char **args)
 {
-	if (args && args[0] && strcmp(args[0], "exit") == 0)
+	if (args && args[0] && strcmp(args[0], "exit") == 0 && args[1] == NULL)
 	{
-		return (1); /* Retourne 1 pour indiquer de sortir du shell */
+		return (1);
 	}
 	return (0); /* Retourne 0 si ce n'est pas "exit" */
 }
@@ -31,7 +31,8 @@ int env_builtin(char **args)
 	{
 		while (environ[i])
 		{
-			printf("%s\n", environ[i]);
+			write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+			write(STDOUT_FILENO, "\n", 1);
 			i++;
 		}
 		return (1); /* Retourne 1 pour indiquer que env a été exécuté */
