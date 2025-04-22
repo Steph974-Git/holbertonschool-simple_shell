@@ -12,7 +12,7 @@
 void handle_sigint(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n$ ", 3);
+	write(STDOUT_FILENO, "\n($) ", 5);
 }
 
 /**
@@ -164,7 +164,7 @@ int main(int argc, char **argv)
 	while (1)
 	{
 		if (interactive)
-			write(STDOUT_FILENO, "$ ", 2);
+    		write(STDOUT_FILENO, "($) ", 4);
 		nread = read_command(&line, &len);
 		if (nread == -1)
 		{
