@@ -17,6 +17,7 @@ char *_getenv(char *name);
 
 /* Prototypes pour parser.c */
 char **split_line(char *line);
+void free_args(char **args);
 
 /* Prototypes pour executor.c */
 int execute_command(char **args, char *program_name, int cmd_count);
@@ -30,5 +31,9 @@ int process_command(char *line, char *program_name, int cmd_count);
 /* Prototypes pour builtins.c */
 int exit_builtin(char **args);
 int env_builtin(char **args);
+int pid_builtin(char **args);
+
+/* Prototypes pour executor.c */
+int command_error(char **args, char *program_name, int cmd_count);
 
 #endif /* SHELL_H */

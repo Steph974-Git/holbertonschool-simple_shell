@@ -6,19 +6,44 @@
 #include "shell.h"
 
 /**
- * execute_command - Exécute une commande avec ou sans chemin absolu
- * @args: Tableau d'arguments de la commande (terminé par NULL)
- * @program_name: Nom du programme shell pour les messages d'erreur
+ * command_error - Gère les erreurs de commande introuvable
+ * @args: Tableau d'arguments de commande
+ * @program_name: Nom du programme pour les messages d'erreur
+ * @cmd_count: Compteur de commandes pour les messages d'erreur
  *
- * Description: Cette fonction exécute une commande en vérifiant d'abord
- * si elle contient un chemin. Si non, elle cherche la commande dans PATH.
- * Elle crée un processus enfant pour exécuter la commande et attend sa
- * terminaison. Gère correctement la libération de la mémoire et les
- * erreurs.
+ * Description: Cette fonction affiche un message d'erreur approprié
+ * selon que la commande contient un chemin ou non.
  *
- * Return: 0 en cas de succès, 127 si la commande n'est pas trouvée,
- * 1 pour les autres erreurs, ou le code de sortie de la commande
+ * Return: 127 pour commandes introuvables, 2 pour chemins invalides
  */
+
+int command_error(char **args, char *program_name, int cmd_count)
+{
+    int code_return;
+
+    if (strchr(args[0], '/') != NULL)
+    {
+        fprintf(stderr, "%s: %d: %s: No such file or directory\n",
+            program_name, cmd_count, args[0]);
+        code_return = 2;
+    }
+    else
+    {
+        fprintf(stderr, "%s: %d: %s: not found\n",
+            program_name, cmd_count, args[0]);
+        code_return = 127;
+    }
+
+    return (code_return);
+}
+/**
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
 int execute_command(char **args, char *program_name, int cmd_count)
 {
     pid_t child_pid;

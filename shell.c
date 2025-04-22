@@ -52,52 +52,76 @@ ssize_t read_command(char **line, size_t *len)
 }
 
 /**
-* process_command - Traite et exécute une commande
-* @line: Ligne de commande à traiter
-* @program_name: Nom du programme shell
-* @cmd_count: Compteur de commandes exécutées
-*
-* Return: Statut d'exécution
-*/
+ * process_command - Traite et exécute une commande
+ * @line: Ligne de commande à traiter
+ * @program_name: Nom du programme shell
+ * @cmd_count: Compteur de commandes exécutées
+ *
+ * Return: Statut d'exécution
+ */
 int process_command(char *line, char *program_name, int cmd_count)
 {
-	char **args;
-	int status;
+    char **args;
+    int status;
+    char *cmd_path;
 
-	if (strlen(line) == 0)
-		return (0);
+    if (strlen(line) == 0)
+        return (0);
 
-	args = split_line(line);
-	if (args == NULL)
+    args = split_line(line);
+    if (args == NULL)
+    {
+        perror("Memory allocation error");
+        return (1);
+    }
+
+    if (args[0] == NULL)
+    {
+        free_args(args);
+        return (0);
+    }
+
+    /* Vérifier les commandes intégrées */
+    if (exit_builtin(args))
+    {
+        free_args(args);
+        return (-1);
+    }
+
+    /* Vérifier si c'est la commande env */
+    if (env_builtin(args))
+    {
+        free_args(args);
+        return (0);
+    }
+
+	/* Vérifier si c'est la commande pid */
+	if (pid_builtin(args))
 	{
-		perror("Memory allocation error");
-		return (1);
+    	free_args(args);
+    	return (0);
 	}
+	
+    /* Rechercher la commande dans PATH */
+    if (strchr(args[0], '/') == NULL)
+    {
+        cmd_path = find_command_in_path(args[0]);
+        if (cmd_path == NULL)
+        {
+            status = command_error(args, program_name, cmd_count);
+            free_args(args);
+            return (status);
+        }
+        status = execute_command(args, program_name, cmd_count);
+        free(cmd_path);
+    }
+    else
+    {
+        status = execute_command(args, program_name, cmd_count);
+    }
 
-	if (args[0] == NULL)
-	{
-		free(args);
-		return (0);
-	}
-
-	/* Vérifier les commandes intégrées */
-	if (exit_builtin(args))
-	{
-		free(args);
-		return (-1);
-	}
-
-	/* Vérifier si c'est la commande env */
-	if (env_builtin(args))
-	{
-		free(args);
-		return (0);
-	}
-
-	status = execute_command(args, program_name, cmd_count);
-	free(args);
-
-	return (status);
+    free_args(args);
+    return (status);
 }
 
 /**
