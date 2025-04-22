@@ -19,10 +19,10 @@
  * Return: 0 en cas de succès, 127 si la commande n'est pas trouvée,
  * 1 pour les autres erreurs, ou le code de sortie de la commande
  */
-int execute_command(char **args, char *program_name)
+int execute_command(char **args, char *program_name, int cmd_count)
 {
     pid_t child_pid;
-    int status;
+    int status, exit_status = 0;
     char *cmd_path = NULL;
     int need_free = 0;
 
@@ -35,23 +35,23 @@ int execute_command(char **args, char *program_name)
         cmd_path = find_command_in_path(args[0]);
         if (cmd_path == NULL)
         {
-            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            fprintf(stderr, "%s: %d: %s: not found\n", 
+                program_name, cmd_count, args[0]);
             return (127);
         }
         need_free = 1;
     }
     else
     {
-        /* Si c'est un chemin, vérifier qu'il existe et est exécutable */
         if (access(args[0], X_OK) != 0)
         {
-            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
-            return (127);
+            fprintf(stderr, "%s: %d: %s: No such file or directory\n",
+                program_name, cmd_count, args[0]);
+            return (2);
         }
         cmd_path = args[0];
     }
 
-    /* À ce stade, on sait que la commande existe, donc on peut fork */
     child_pid = fork();
 
     if (child_pid == -1)
@@ -66,20 +66,23 @@ int execute_command(char **args, char *program_name)
     {
         if (execve(cmd_path, args, environ) == -1)
         {
-            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            fprintf(stderr, "%s: %d: %s: Cannot execute\n",
+                program_name, cmd_count, args[0]);
             if (need_free)
                 free(cmd_path);
-            exit(127);
+            exit(126);
         }
     }
     else
     {
-        waitpid(child_pid, &status, 0);
+        wait(&status);
+        if (WIFEXITED(status))
+            exit_status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            exit_status = 128 + WTERMSIG(status);
+
         if (need_free)
             free(cmd_path);
-        
-        return (WIFEXITED(status) ? WEXITSTATUS(status) : 1);
     }
-
-    return (0);
+    return (exit_status);
 }

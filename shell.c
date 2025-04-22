@@ -55,10 +55,11 @@ ssize_t read_command(char **line, size_t *len)
 * process_command - Traite et exécute une commande
 * @line: Ligne de commande à traiter
 * @program_name: Nom du programme shell
+* @cmd_count: Compteur de commandes exécutées
 *
 * Return: Statut d'exécution
 */
-int process_command(char *line, char *program_name)
+int process_command(char *line, char *program_name, int cmd_count)
 {
 	char **args;
 	int status;
@@ -73,21 +74,27 @@ int process_command(char *line, char *program_name)
 		return (1);
 	}
 
+	if (args[0] == NULL)
+	{
+		free(args);
+		return (0);
+	}
+
 	/* Vérifier les commandes intégrées */
 	if (exit_builtin(args))
 	{
 		free(args);
-		return (99); /* Code spécial pour indiquer exit */
+		return (-1);
 	}
 
 	/* Vérifier si c'est la commande env */
 	if (env_builtin(args))
 	{
 		free(args);
-		return (0); /* Continuer l'exécution normale du shell */
+		return (0);
 	}
 
-	status = execute_command(args, program_name);
+	status = execute_command(args, program_name, cmd_count);
 	free(args);
 
 	return (status);
@@ -103,26 +110,21 @@ int process_command(char *line, char *program_name)
 int main(int argc, char **argv)
 {
 	char *line = NULL;
-
 	size_t len = 0;
 	ssize_t nread;
 	int interactive = isatty(STDIN_FILENO);
-	int line_number = 0;
+	int cmd_count = 1;  /* Ajoutez un compteur de commandes */
 	char *program_name = argv[0];
 	int last_status = 0;
 
 	signal(SIGINT, handle_sigint);
 	signal(SIGSEGV, handle_sigsegv);
 	signal(SIGTERM, SIG_IGN);
-
 	(void)argc;
 	while (1)
 	{
-		line_number++;
 		if (interactive)
-		{
 			write(STDOUT_FILENO, "$ ", 2);
-		}
 		nread = read_command(&line, &len);
 		if (nread == -1)
 		{
@@ -130,13 +132,21 @@ int main(int argc, char **argv)
 				write(STDOUT_FILENO, "\n", 1);
 			break;
 		}
-		last_status = process_command(line, program_name);
-		if (last_status == 99) /* Code pour exit */
+		if (strlen(line) == 0)
 		{
-			break; /* Sortir de la boucle et terminer le shell */
+			cmd_count++;
+			continue;
+		}
+		last_status = process_command(line, program_name, cmd_count);
+		cmd_count++;
+
+		if (last_status == -1)  /* Changez le code de sortie pour exit */
+		{
+			last_status = 0;
+			break;
 		}
 	}
 	if (line != NULL)
 		free(line);
-	return (0);  /* Ajoutez cette ligne de retour */
+	return (last_status);  /* Retournez le dernier statut */
 }

@@ -13,12 +13,13 @@
 */
 int exit_builtin(char **args)
 {
-	if (args && args[0] && strcmp(args[0], "exit") == 0 && args[1] == NULL)
+	if (args && args[0] && strcmp(args[0], "exit") == 0)
 	{
-		exit(0); /* Retourne 1 pour indiquer exit */
+		return (1); /* Indique de quitter le shell */
 	}
 	return (0);
 }
+
 
 /**
  * env_builtin - Implémente la commande intégrée "env"
