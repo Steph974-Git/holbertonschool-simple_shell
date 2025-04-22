@@ -21,35 +21,43 @@
  */
 int execute_command(char **args, char *program_name)
 {
-	pid_t child_pid;
-	int status;
-	char *cmd_path = NULL;
-	int need_free = 0;
+    pid_t child_pid;
+    int status;
+    char *cmd_path = NULL;
+    int need_free = 0;
 
-	if (args[0] == NULL)
-		return (0);
+    if (args[0] == NULL)
+        return (0);
+    
+    /* Vérifier si c'est une commande interne qui a échappé à process_command */
+    if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "env") == 0)
+    {
+        /* Ceci ne devrait jamais arriver car process_command() doit intercepter ces commandes */
+        fprintf(stderr, "Error: Built-in command reached execute_command\n");
+        return (1);
+    }
 
-	/* Chercher la commande dans PATH si c'est un nom simple */
-	if (strchr(args[0], '/') == NULL)
-	{
-		cmd_path = find_command_in_path(args[0]);
-		if (cmd_path == NULL)
-		{
-			fprintf(stderr, "%s: No such file or directory\n", program_name);
-			return (127);
-		}
-		need_free = 1;
-	}
-	else
-	{
-		/* Si c'est un chemin, vérifier qu'il existe et est exécutable */
-		if (access(args[0], X_OK) != 0)
-		{
-			fprintf(stderr, "%s: No such file or directory\n", program_name);
-			return (127);
-		}
-		cmd_path = args[0];
-	}
+    /* Chercher la commande dans PATH si c'est un nom simple */
+    if (strchr(args[0], '/') == NULL)
+    {
+        cmd_path = find_command_in_path(args[0]);
+        if (cmd_path == NULL)
+        {
+            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            return (127);
+        }
+        need_free = 1;
+    }
+    else
+    {
+        /* Si c'est un chemin, vérifier qu'il existe et est exécutable */
+        if (access(args[0], X_OK) != 0)
+        {
+            fprintf(stderr, "%s: 1: %s: not found\n", program_name, args[0]);
+            return (127);
+        }
+        cmd_path = args[0];
+    }
 
 	/* À ce stade, on sait que la commande existe, donc on peut fork */
 	child_pid = fork();

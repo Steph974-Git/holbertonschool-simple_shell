@@ -59,8 +59,7 @@ int process_command(char *line, char *program_name)
 	if (exit_builtin(args))
 	{
 		free(args);
-		free(line); /* Libérez la ligne ici aussi */
-		exit(0); /* Sortie immédiate avec statut 0 */
+		return (2); /* Code spécial pour indiquer exit */
 	}
 
 	/* Vérifier si c'est la commande env */

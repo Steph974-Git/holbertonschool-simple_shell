@@ -10,40 +10,61 @@
  *
  * Return: Array of pointers to words (command and its arguments)
  */
+/**
+ * split_line - Splits a line into words to handle command with arguments
+ * @line: The string to be split
+ *
+ * Return: Array of pointers to words (command and its arguments)
+ */
 char **split_line(char *line)
 {
-	char **array = NULL;
-	char *token, *line_copy;
-	int count = 0, i = 0;
+    char **array = NULL;
+    char *token, *line_copy;
+    int count = 0, i = 0;
 
-	/* Créer une copie de la ligne pour le premier comptage */
-	line_copy = strdup(line);
-	if (!line_copy)
-		return (NULL);
+    /* Vérifier les caractères de contrôle qui peuvent venir des touches fléchées */
+    for (i = 0; line[i] != '\0'; i++)
+    {
+        if (line[i] < 32 && line[i] != '\t' && line[i] != '\n')
+        {
+            /* Retourner un tableau vide avec juste NULL */
+            array = malloc(sizeof(char *));
+            if (!array)
+                return (NULL);
+            array[0] = NULL;
+            return (array);
+        }
+    }
 
-	/* Compter le nombre de tokens */
-	token = strtok(line_copy, " \t\n");
-	while (token)
-	{
-		count++;
-		token = strtok(NULL, " \t\n");
-	}
-	free(line_copy);
+    /* Créer une copie de la ligne pour le premier comptage */
+    line_copy = strdup(line);
+    if (!line_copy)
+        return (NULL);
 
-	/* Allouer l'espace exact nécessaire (count + 1 pour le NULL final) */
-	array = malloc((count + 1) * sizeof(char *));
-	if (!array)
-		return (NULL);
+    /* Compter le nombre de tokens */
+    token = strtok(line_copy, " \t\n");
+    while (token)
+    {
+        count++;
+        token = strtok(NULL, " \t\n");
+    }
+    free(line_copy);
 
-	/* Remplir le tableau avec les tokens */
-	token = strtok(line, " \t\n");
-	while (token && i < count)
-	{
-		array[i] = token;
-		i++;
-		token = strtok(NULL, " \t\n");
-	}
-	array[i] = NULL; /* Terminer le tableau par NULL */
+    /* Allouer l'espace exact nécessaire (count + 1 pour le NULL final) */
+    array = malloc((count + 1) * sizeof(char *));
+    if (!array)
+        return (NULL);
 
-	return (array);
+    /* Remplir le tableau avec les tokens */
+    i = 0;
+    token = strtok(line, " \t\n");
+    while (token && i < count)
+    {
+        array[i] = token;
+        i++;
+        token = strtok(NULL, " \t\n");
+    }
+    array[i] = NULL; /* Terminer le tableau par NULL */
+
+    return (array);
 }
