@@ -10,9 +10,10 @@
  * @args: Arguments de la commande entrée par l'utilisateur
  * @program_name: Nom du programme shell (pour les messages d'erreur)
  *
- * Return: Code de sortie spécial pour indiquer exit
+ * Return: 2 en cas d'erreur de syntaxe, 0 si ce n'est pas la commande exit
+ * Note: La fonction ne retourne pas si c'est un exit valide
+ * (elle termine le programme)
  */
-
 int exit_builtin(char **args, char *program_name)
 {
 	int exit_code = 0;
@@ -40,23 +41,24 @@ int exit_builtin(char **args, char *program_name)
 			{
 				/* Argument non numérique, afficher un message d'erreur */
 				fprintf(stderr, "%s: 1: exit: Illegal number: %s\n",
-					program_name, args[1]);
-				return (2);  /* Code de retour spécial pour erreur */
+						program_name, args[1]);
+				return (2);  /* Code de retour pour erreur */
 			}
 
 			/* Normaliser le code de sortie (entre 0 et 255) */
 			exit_code = (int)((unsigned long)temp_exit_code % 256);
 
-			/* Si la valeur est négative, ajustez-la pour qu'elle soit entre 0 et 255 */
+			/* Si la valeur est négative, ajustez-la pour qu'elle soit */
+			/* entre 0 et 255 */
 			if (exit_code < 0)
-    			exit_code += 256;
+				exit_code += 256;
+
+			/* Terminer le programme avec le code approprié */
+			exit(exit_code);
 		}
 
-		/* Dans main(), ce code sera utilisé comme valeur de retour du shell */
-		exit_code = (exit_code << 8) | 1;
-		/* Le bit moins significatif indique exit, les autres contiennent le code */
-
-		return (exit_code);  /* Retourne le code combiné */
+		/* Exit sans argument - terminer avec code 0 */
+		exit(0);
 	}
 	return (0);  /* Ce n'est pas la commande exit */
 }
