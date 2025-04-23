@@ -20,7 +20,9 @@ The shell displays a prompt ("($)") and waits for user input. It handles Ctrl+C 
 .B Non-interactive mode:
 The shell reads commands from standard input, such as:
 .nf
-$ echo "/bin/ls" | ./simple_shell
+$ echo "/bin/ls" | ./hsh
+$ echo "env" | ./hsh
+$ echo -e "pid\\nexit" | ./hsh
 .fi
 
 .SH COMMAND EXECUTION
