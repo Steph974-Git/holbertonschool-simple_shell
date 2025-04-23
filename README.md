@@ -143,12 +143,18 @@ $ echo "ls -l | grep file" | ./hsh
 -rw-r--r-- 1 user user  0 Apr 23 12:00 file2
 $
 ```
+## Flowchart
+
+<img src="Image/Flowchart.png"/>
+
 
 ## How to Execute the Manual Page
 To view the manual page for the shell, use the following command:
 ```bash
 man ./man_1_simple_shell
 ```
+<img src="Image/man1.png"/>
+<img src="Image/man2.png"/>
 
 ## How to Check Memory Leaks
 To check for memory leaks, use `valgrind`:
