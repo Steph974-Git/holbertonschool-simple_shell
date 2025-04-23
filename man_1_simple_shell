@@ -14,7 +14,7 @@ The shell operates in two modes:
 
 .PP
 .B Interactive mode:
-The shell displays a prompt ("#cisfun$") and waits for user input. It handles Ctrl+C (SIGINT) gracefully by redisplaying the prompt instead of terminating.
+The shell displays a prompt ("($)") and waits for user input. It handles Ctrl+C (SIGINT) gracefully by redisplaying the prompt instead of terminating.
 
 .PP
 .B Non-interactive mode:
@@ -39,7 +39,7 @@ If the command is found and has execute permission, it is executed. Otherwise, a
 .SH BUILT-IN COMMANDS
 .TP
 .B exit [status]
-Exit the shell. Optionally takes a numeric argument as the exit status.
+Exit the shell. Optionally takes a numeric argument as the exit status. If no argument is provided, the shell exits with a status of 0. If the argument is invalid or there are too many arguments, an error message is displayed.
 
 .TP
 .B env
@@ -94,10 +94,10 @@ The exit status of the last executed command, if it was successful.
 .B Interactive mode:
 .nf
 $ ./hsh
-#cisfun$ ls -l
-#cisfun$ pid
+($) ls -l
+($) pid
 12345
-#cisfun$ exit
+($) exit
 .fi
 
 .TP

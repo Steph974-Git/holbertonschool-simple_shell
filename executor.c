@@ -36,12 +36,14 @@ int command_error(char **args, char *program_name, int cmd_count)
 
     return (code_return);
 }
+
 /**
- * 
- * 
- * 
- * 
- * 
+ * execute_command - Exécute une commande externe
+ * @args: Tableau d'arguments de la commande
+ * @program_name: Nom du programme shell (pour les messages d'erreur)
+ * @cmd_count: Numéro de la commande (pour les messages d'erreur)
+ *
+ * Return: Code de sortie de la commande exécutée, ou un code d'erreur.
  */
 
 int execute_command(char **args, char *program_name, int cmd_count)
