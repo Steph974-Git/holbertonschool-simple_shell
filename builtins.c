@@ -47,14 +47,14 @@ int exit_builtin(char **args, char *program_name)
 			/* Normaliser le code de sortie (entre 0 et 255) */
 			exit_code = (int)((unsigned long)temp_exit_code % 256);
 
-			/* Si la valeur est négative, ajustez-la pour qu'elle soit entre 0 et 255 */
+			/* Si la valeur est négative, ajustez-la pour qu'elle soit */
+			/* entre 0 et 255 */
 			if (exit_code < 0)
     			exit_code += 256;
 		}
 
 		/* Dans main(), ce code sera utilisé comme valeur de retour du shell */
 		exit_code = (exit_code << 8) | 1;
-		/* Le bit moins significatif indique exit, les autres contiennent le code */
 
 		return (exit_code);  /* Retourne le code combiné */
 	}

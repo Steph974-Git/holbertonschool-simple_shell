@@ -19,7 +19,6 @@ char *find_command_in_path(char *command)
     /* Vérifier si la commande inclut déjà un chemin */
     if (strchr(command, '/') != NULL)
     {
-        /* Utiliser stat au lieu de access pour une vérification plus complète */
         if (stat(command, &st) == 0 && (st.st_mode & S_IXUSR))
             return (strdup(command));
         return (NULL);
@@ -46,7 +45,6 @@ char *find_command_in_path(char *command)
         
         sprintf(full_path, "%s/%s", dir, command);
         
-        /* Utiliser stat au lieu de access */
         if (stat(full_path, &st) == 0 && (st.st_mode & S_IXUSR))
         {
             free(path_copy);
