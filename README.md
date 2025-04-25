@@ -81,8 +81,6 @@ $
 | `env_utils.c`     | Functions to handle environment variables                                  |
 | `builtins.c`      | Implementation of built-in commands (`exit`, `env`, `pid`)                 |
 | `shell.h`         | Header file containing function prototypes and shared definitions          |
-| `test_exit.sh`    | Script to test the `exit` functionality                                    |
-| `builtin_test.sh` | Script to test built-in commands                                           |
 | `man_1_simple_shell` | Manual page for the shell                                               |
 
 ## Function Prototypes
@@ -185,6 +183,3 @@ This project provided a deep understanding of how a shell works, including comma
 ## Authors
 - Stephane Paton
 - Wassef Abdallah
-
-## License
-This project is licensed under the terms of the MIT license.
