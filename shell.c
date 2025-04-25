@@ -5,6 +5,8 @@
 #include <signal.h>
 #include "shell.h"
 
+int command_is_exit = 0;  /* Définition de la variable globale */
+
 /**
 * handle_sigint - Gestionnaire de signal pour SIGINT (Ctrl+C)
 * @sig: Numéro du signal
@@ -65,7 +67,7 @@ int process_command(char *line, char *program_name, int cmd_count)
    int status;
    char *cmd_path;
    int exit_status; /* Déclarez toutes les variables au début */
-   int actual_exit_code;
+   int actual_exit_code = 0;
 
    if (strlen(line) == 0)
 	   return (0);
@@ -89,6 +91,7 @@ int process_command(char *line, char *program_name, int cmd_count)
    {
 	   if (exit_status == 2)  /* Cas d'erreur de syntaxe */
 	   {
+			command_is_exit = 1;
 		   free_args(args);
 		   return (2);
 	   }
@@ -156,6 +159,7 @@ int main(int argc, char **argv)
 	int cmd_count = 1;  /* Ajoutez un compteur de commandes */
 	char *program_name = argv[0];
 	int last_status = 0;
+	int command_is_exit = 0;
 
 	signal(SIGINT, handle_sigint);
 	signal(SIGSEGV, handle_sigsegv);
@@ -185,9 +189,10 @@ int main(int argc, char **argv)
 			last_status = -last_status;  /* Convertir en positif pour le vrai exit */
 			break;
 		}
-		else if (last_status == 2)  /* Erreur de syntaxe dans exit */
+		else if (last_status == 2 && command_is_exit)  /* Erreur de syntaxe dans exit */
 		{
 			/* Continuer l'exécution */
+			command_is_exit = 0;  /* Réinitialiser le drapeau */
 		}
 		else if (last_status == 1)  /* Exit simple sans code */
 		{
