@@ -65,75 +65,75 @@ int process_command(char *line, char *program_name, int cmd_count)
    int status;
    char *cmd_path;
    int exit_status; /* Déclarez toutes les variables au début */
-   int actual_exit_code;
 
    if (strlen(line) == 0)
-	   return (0);
+       return (0);
 
    args = split_line(line);
    if (args == NULL)
    {
-	   perror("Memory allocation error");
-	   return (1);
+       perror("Memory allocation error");
+       return (1);
    }
 
    if (args[0] == NULL)
    {
-	   free_args(args);
-	   return (0);
+       free_args(args);
+       return (0);
    }
 
    /* Vérifier les commandes intégrées */
    exit_status = exit_builtin(args, program_name);
    if (exit_status)
    {
-	  if (exit_status == -2)  /* Cas d'erreur de syntaxe dans exit */
-	  {
-		  free_args(args);
-		  return (-2);  /* Gardez le code négatif pour l'identifier */
-	  }
-   
-	  /* Extraire le code de sortie réel */
-	  actual_exit_code = exit_status >> 8;
-	  free_args(args);
-   
-	  /* Le bit 0 indique si c'est un exit normal */
-	  if (exit_status & 1)
-		  return (-actual_exit_code);  /* Code négatif pour indiquer exit avec valeur */
-   
-	  return (exit_status);
+      /* Si c'est un exit valide (avec ou sans code) */
+      if (exit_status & 1 || exit_status == 1)
+      {
+          /* Calcul du code si nécessaire, mais on le fait dans main */
+          free_args(args);
+          return (-2);  /* Signal pour exit dans main */
+      }
+      else if (exit_status == -2)  /* Cas d'erreur de syntaxe dans exit */
+      {
+          free_args(args);
+          return (2);  /* Erreur de syntaxe, on continue */
+      }
+      
+      /* Autres cas */
+      free_args(args);
+      return (exit_status);
    }
 
    /* Vérifier si c'est la commande env */
    if (env_builtin(args))
    {
-	   free_args(args);
-	   return (0);
+       free_args(args);
+       return (0);
    }
 
    /* Vérifier si c'est la commande pid */
    if (pid_builtin(args))
    {
-	   free_args(args);
-	   return (0);
+       free_args(args);
+       return (0);
    }
    
    /* Rechercher la commande dans PATH */
    if (strchr(args[0], '/') == NULL)
    {
-	   cmd_path = find_command_in_path(args[0]);
-	   if (cmd_path == NULL)
-	   {
-		   status = command_error(args, program_name, cmd_count);
-		   free_args(args);
-		   return (status);
-	   }
-	   status = execute_command(args, program_name, cmd_count);
-	   free(cmd_path);
+       cmd_path = find_command_in_path(args[0]);
+       if (cmd_path == NULL)
+       {
+           status = command_error(args, program_name, cmd_count);
+           free_args(args);
+           return (status);
+       }
+       status = execute_command(args, program_name, cmd_count);
+       free(cmd_path);
    }
    else
    {
-	   status = execute_command(args, program_name, cmd_count);
+       status = execute_command(args, program_name, cmd_count);
    }
 
    free_args(args);
