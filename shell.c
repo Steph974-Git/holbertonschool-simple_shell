@@ -149,54 +149,61 @@ int process_command(char *line, char *program_name, int cmd_count)
 */
 int main(int argc, char **argv)
 {
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t nread;
-	int interactive = isatty(STDIN_FILENO);
-	int cmd_count = 1;  /* Ajoutez un compteur de commandes */
-	char *program_name = argv[0];
-	int last_status = 0;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t nread;
+    int interactive = isatty(STDIN_FILENO);
+    int cmd_count = 1;  /* Ajoutez un compteur de commandes */
+    char *program_name = argv[0];
+    int last_status = 0;
+    int prev_cmd_status = 0;  /* Pour stocker le statut de la dernière commande */
 
-	signal(SIGINT, handle_sigint);
-	signal(SIGSEGV, handle_sigsegv);
-	signal(SIGTERM, SIG_IGN);
-	(void)argc;
-	while (1)
-	{
-		if (interactive)
-    		write(STDOUT_FILENO, "($) ", 4);
-		nread = read_command(&line, &len);
-		if (nread == -1)
-		{
-			if (interactive)
-				write(STDOUT_FILENO, "\n", 1);
-			break;
-		}
-		if (strlen(line) == 0)
-		{
-			cmd_count++;
-			continue;
-		}
-		last_status = process_command(line, program_name, cmd_count);
-		cmd_count++;
+    signal(SIGINT, handle_sigint);
+    signal(SIGSEGV, handle_sigsegv);
+    signal(SIGTERM, SIG_IGN);
+    (void)argc;
+    while (1)
+    {
+        if (interactive)
+            write(STDOUT_FILENO, "($) ", 4);
+        nread = read_command(&line, &len);
+        if (nread == -1)
+        {
+            if (interactive)
+                write(STDOUT_FILENO, "\n", 1);
+            break;
+        }
+        if (strlen(line) == 0)
+        {
+            cmd_count++;
+            continue;
+        }
+        last_status = process_command(line, program_name, cmd_count);
+        cmd_count++;
 
-		if (last_status == -2)  /* Erreur de syntaxe dans exit */
-		{
-			last_status = 2;  /* Convertir en code positif pour le rapporter */
-			/* Continuer l'exécution */
-		}
-		else if (last_status < 0)  /* Exit avec un code spécifique */
-		{
-			last_status = -last_status;  /* Convertir en positif pour le vrai exit */
-			break;
-		}
-		else if (last_status == 1)  /* Exit simple sans code */
-		{
-			last_status = 0;  /* Exit avec succès par défaut */
-			break;
-		}
-	}
-	if (line != NULL)
-		free(line);
-	return (last_status);  /* Retournez le dernier statut */
+        if (last_status == -2)  /* Erreur de syntaxe dans exit */
+        {
+            last_status = 2;  /* Convertir en code positif pour le rapporter */
+            prev_cmd_status = last_status;  /* Mettre à jour le statut précédent */
+            /* Continuer l'exécution */
+        }
+        else if (last_status < 0)  /* Exit avec un code spécifique */
+        {
+            last_status = -last_status;  /* Convertir en positif pour le vrai exit */
+            break;
+        }
+        else if (last_status == 1)  /* Exit simple sans code */
+        {
+            last_status = prev_cmd_status;  /* Utiliser le statut de la dernière commande */
+            break;
+        }
+        else
+        {
+            prev_cmd_status = last_status;  /* Sauvegarder le statut pour un futur exit */
+        }
+    }
+    if (line != NULL)
+        free(line);
+    return (last_status);  /* Retournez le dernier statut */
 }
+
