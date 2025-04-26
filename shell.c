@@ -178,32 +178,32 @@ int main(int argc, char **argv)
             cmd_count++;
             continue;
         }
+        
         last_status = process_command(line, program_name, cmd_count);
         cmd_count++;
 
-        if (last_status == -2)  /* Erreur de syntaxe dans exit */
+        if (last_status == -2)  /* Exit command was entered */
         {
-            last_status = 2;  /* Convertir en code positif pour le rapporter */
-            prev_cmd_status = last_status;  /* Mettre à jour le statut précédent */
-            /* Continuer l'exécution */
+            if (line != NULL)
+                free(line);
+            return (prev_cmd_status);  /* Return status of previous command */
         }
-        else if (last_status < 0)  /* Exit avec un code spécifique */
+        
+        /* Sauvegarder le statut pour un potentiel exit */
+        prev_cmd_status = last_status;
+
+        if (last_status < 0)  /* Exit avec un code spécifique */
         {
             last_status = -last_status;  /* Convertir en positif pour le vrai exit */
             break;
         }
         else if (last_status == 1)  /* Exit simple sans code */
         {
-            last_status = prev_cmd_status;  /* Utiliser le statut de la dernière commande */
+            last_status = prev_cmd_status;  /* Utiliser statut de commande précédente */
             break;
-        }
-        else
-        {
-            prev_cmd_status = last_status;  /* Sauvegarder le statut pour un futur exit */
         }
     }
     if (line != NULL)
         free(line);
-    return (last_status);  /* Retournez le dernier statut */
+    return (last_status);
 }
-
