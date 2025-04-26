@@ -11,9 +11,6 @@
 /* Déclaration externe de environ pour l'utiliser dans tous les fichiers */
 extern char **environ;
 
-/* Variable globale pour indiquer une erreur dans la commande exit */
-extern int command_is_exit;
-
 /* Fonctions liées à l'environnement */
 char *find_command_in_path(char *command);
 char *_getenv(char *name);
